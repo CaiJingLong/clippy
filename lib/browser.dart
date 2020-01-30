@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:html';
 import 'package:clippy/src/browser.dart';
+export 'src/clipboard.dart';
 
 final clipboard = new BrowserClipboard();
 
