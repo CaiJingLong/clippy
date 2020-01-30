@@ -34,6 +34,14 @@ class MacClipboard implements Clipboard {
       return '';
     }
   }
+
+  @override
+  Future<T> readTransformer<T>(StreamTransformer<List<int>, T> transformer) async {
+    final process = await Process.start('pbpaste', [], runInShell: true);
+    process.stderr.transform(utf8.decoder).listen(print);
+    final stdout = process.stdout.transform(transformer);
+    return stdout.first;
+  }
 }
 
 class LinuxClipboard implements Clipboard {
@@ -69,10 +77,21 @@ class LinuxClipboard implements Clipboard {
       return '';
     }
   }
+
+  @override
+  Future<T> readTransformer<T>(StreamTransformer<List<int>, T> transformer) async {
+    final process = await Process.start('xsel', ['--clipboard', '--output'],
+        runInShell: true);
+    process.stderr.transform(utf8.decoder).listen(print);
+    final stdout = process.stdout.transform(transformer);
+    return stdout.first;
+  }
 }
 
-final winCopyPath = path.join(path.current, 'lib/src/backends/windows/copy.exe');
-final winPastePath = path.join(path.current, 'lib/src/backends/windows/paste.exe');
+final winCopyPath =
+    path.join(path.current, 'lib/src/backends/windows/copy.exe');
+final winPastePath =
+    path.join(path.current, 'lib/src/backends/windows/paste.exe');
 
 class WindowsClipboard implements Clipboard {
   @override
@@ -102,5 +121,13 @@ class WindowsClipboard implements Clipboard {
     } catch (_) {
       return '';
     }
+  }
+
+  @override
+  Future<T> readTransformer<T>(StreamTransformer<List<int>, T> transformer) async {
+    final process = await Process.start(winPastePath, [], runInShell: true);
+    process.stderr.transform(utf8.decoder).listen(print);
+    final stdout = process.stdout.transform(transformer);
+    return stdout.first;
   }
 }

@@ -24,6 +24,12 @@ class BrowserClipboard implements Clipboard {
   }
 
   Stream<String> get onPaste => document.onPaste.map(_textConverter);
+
+  @override
+  Future<T> readTransformer<T>(StreamTransformer<List<int>, T> transformer) {
+    // TODO: not supported by browsers
+    return null;
+  }
 }
 
 String _textConverter(ClipboardEvent input) {
